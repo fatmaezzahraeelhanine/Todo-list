@@ -1,0 +1,752 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ma Todo List</title>
+
+    <style>
+      /* STYLE GENERAL */
+      * {margin: 0;padding: 0; box-sizing: border-box;}
+
+      body {font-family: "Segoe UI", Arial, sans-serif;background-color: #f4f5fa;color: #292d3e;padding: 40px 20px;
+        max-width: 1200px;
+        margin: auto;
+      }
+
+      h1 {
+        text-align: center;
+        margin-bottom: 30px;
+        color: #34365b;
+        font-size: 30px;
+      }
+
+      /* FORMULAIRE */
+
+      .formulaire {
+        background-color: white;
+        padding: 20px;
+        border-radius: 12px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+      }
+
+      input,
+      select {
+        padding: 12px;
+        border: 1px solid #dedfeb;
+        border-radius: 8px;
+        background-color: white;
+        color: #34365b;
+        font-size: 14px;
+        margin: 5px 3px;
+      }
+
+      input:focus,
+      select:focus {
+        border-color: #8174d9;
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(129, 116, 217, 0.12);
+      }
+
+      input[type="text"] {
+        min-width: 220px;
+      }
+
+      /* BOUTONS */
+
+      button {
+        padding: 11px 15px;
+        border: none;
+        border-radius: 8px;
+        background-color: #7568c9;
+        color: white;
+        font-size: 13px;
+        cursor: pointer;
+        margin: 5px 3px;
+        transition: 0.2s;
+      }
+
+      button:hover {
+        background-color: #5e52ad;
+        transform: translateY(-1px);
+      }
+
+      /* MESSAGE */
+
+      #message {
+        margin: 15px 0;
+        color: #d64b58;
+        font-weight: 600;
+      }
+      /* STATISTIQUES */
+      #counter {
+        background-color: white;
+        padding: 16px;
+        border-radius: 10px;
+        margin: 20px 0;
+        border: 1px solid #e6e7ef;
+        color: #5e5d78;
+        font-weight: 600;
+        text-align: center;
+      }
+      /* SECTIONS DES CATEGORIES */
+
+      .category-section {
+        padding: 20px;
+        border-radius: 12px;
+        margin: 25px 0;
+      }
+      /* COULEURS DES CATEGORIES */
+      .etudes {
+        background-color: #edf4ff;
+        border: 1px solid #c9dcff;
+      }
+      .etudes h2 {
+        color: #3267b2;
+      }
+      .travail {
+        background-color: #f3efff;
+        border: 1px solid #d9ccff;
+      }
+      .travail h2 {
+        color: #7450b8;
+      }
+      .personnel {
+        background-color: #fff0f4;
+        border: 1px solid #ffd0dd;
+      }
+      .personnel h2 {
+        color: #c34d78;
+      }
+      .projets {
+        background-color: #fff5e9;
+        border: 1px solid #ffdfb8;
+      }
+      .projets h2 {
+        color: #c47a27;
+      }
+      .sport {
+        background-color: #eaf8ef;
+        border: 1px solid #c3e9cf;
+      }
+      .sport h2 {
+        color: #348453;
+      }
+      /* TITRES CLIQUABLES DES CATEGORIES */
+      .category-title {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        cursor: pointer;
+        padding: 12px;
+        border-radius: 8px;
+        transition: 0.2s;
+      }
+      .category-title:hover {
+        filter: brightness(0.95);
+      }
+
+      /* FLECHE */
+
+      .arrow {
+        font-size: 20px;
+        transition: 0.2s;
+      }
+
+      .arrow.rotate {
+        transform: rotate(180deg);
+      }
+
+      /* GRILLE DES TACHES */
+
+      .task-grid {
+        display: none;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 15px;
+        margin-top: 15px;
+      }
+
+      .task-grid.show {
+        display: grid;
+      }
+
+      /* CARTES DES TACHES */
+
+      .task-card {
+        background-color: white;
+        padding: 18px;
+        border-radius: 10px;
+        border: 1px solid #e6e7ef;
+        box-shadow: 0 2px 7px rgba(40, 40, 80, 0.05);
+        transition: 0.2s;
+        line-height: 1.8;
+        overflow-wrap: anywhere;
+      }
+
+      .task-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 14px rgba(40, 40, 80, 0.1);
+      }
+
+      .task-card h3 {
+        margin-bottom: 10px;
+        color: #34365b;
+        font-size: 17px;
+      }
+
+      .task-info {
+        color: #66677a;
+        font-size: 13px;
+        margin-bottom: 12px;
+      }
+
+      /* PRIORITES */
+
+      .haute {
+        border-left: 5px solid #e45b68;
+      }
+
+      .moyenne {
+        border-left: 5px solid #e6a94e;
+      }
+
+      .basse {
+        border-left: 5px solid #55ad83;
+      }
+
+      /* TACHES URGENTES */
+
+      .urgent {
+        background-color: #fff5f5;
+        border: 2px solid #d94354;
+      }
+
+      /* TACHES TERMINEES */
+
+      .terminee h3 {
+        text-decoration: line-through;
+        color: #888;
+      }
+
+      /* MESSAGE CATEGORIE VIDE */
+
+      .empty-message {
+        color: #777;
+        font-size: 13px;
+        font-style: italic;
+      }
+
+      /* BOUTONS DES CARTES */
+
+      .task-card button {
+        font-size: 12px;
+        padding: 9px 11px;
+      }
+
+      .delete-button {
+        background-color: #fff0f0;
+        color: #d64b58;
+      }
+
+      .delete-button:hover {
+        background-color: #d64b58;
+        color: white;
+      }
+
+      /* RESPONSIVE */
+
+      @media (max-width: 650px) {
+        body {
+          padding: 20px 12px;
+        }
+
+        input,
+        select {
+          width: 100%;
+          margin: 5px 0;
+        }
+
+        #bouton {
+          width: 100%;
+        }
+
+        .task-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .category-section {
+          padding: 12px;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <h1>Ma Todo List</h1>
+
+    <!-- FORMULAIRE D'AJOUT -->
+
+    <div class="formulaire">
+      <input id="tache" type="text" placeholder="Écrire une tâche" />
+
+      <input id="deadline" type="date" />
+
+      <select id="categorie">
+        <option value="etudes">Études</option>
+        <option value="travail">Travail</option>
+        <option value="personnel">Personnel</option>
+        <option value="projets">Projets</option>
+        <option value="sport">Sport</option>
+      </select>
+
+      <select id="taskExtra">
+        <option value="basse">Priorité basse</option>
+        <option value="moyenne">Priorité moyenne</option>
+        <option value="haute">Priorité haute</option>
+      </select>
+
+      <button id="bouton">Ajouter</button>
+    </div>
+
+    <p id="message"></p>
+
+    <!-- STATISTIQUES -->
+
+    <p id="counter">Nombre total : 0 | Terminées : 0 | Restantes : 0</p>
+
+    <!-- AFFICHAGE DES CATEGORIES -->
+
+    <div id="liste"></div>
+
+    <script>
+      // RECUPERATION DES ELEMENTS HTML
+
+      const champ = document.getElementById("tache");
+      const taskExtra = document.getElementById("taskExtra");
+      const bouton = document.getElementById("bouton");
+      const message = document.getElementById("message");
+      const liste = document.getElementById("liste");
+      const counter = document.getElementById("counter");
+      const deadline = document.getElementById("deadline");
+      const categorie = document.getElementById("categorie");
+
+      // DATE MINIMALE
+
+      deadline.min = new Date().toISOString().split("T")[0];
+
+      // TABLEAU DES TACHES
+
+      let tasks = [];
+
+      // CATEGORIES DISPONIBLES
+
+      const categories = ["etudes", "travail", "personnel", "projets", "sport"];
+
+      // ETAT D'OUVERTURE DES CATEGORIES
+
+      let openedCategories = [];
+
+      // AJOUTER UNE TACHE
+
+      function addTask(taskName, taskPriority) {
+        taskName = taskName.trim();
+
+        if (taskName === "") {
+          message.textContent = "Veuillez entrer une tâche.";
+          return;
+        }
+
+        const newTask = {
+          name: taskName,
+          done: false,
+          extra: taskPriority,
+          deadline: deadline.value,
+          categorie: categorie.value,
+        };
+
+        tasks.push(newTask);
+
+        // Ouvrir automatiquement la catégorie de la nouvelle tâche
+
+        if (!openedCategories.includes(categorie.value)) {
+          openedCategories.push(categorie.value);
+        }
+
+        sortTasks();
+        displayTasks();
+
+        if (
+          taskPriority === "haute" ||
+          taskName.toLowerCase().includes("urgent")
+        ) {
+          message.textContent = "Attention : cette tâche est urgente !";
+        } else {
+          message.textContent = "";
+        }
+
+        // VIDER LES CHAMPS
+
+        champ.value = "";
+        taskExtra.value = "basse";
+        deadline.value = "";
+        categorie.value = "etudes";
+
+        champ.focus();
+      }
+
+      // AFFICHER LES TACHES PAR CATEGORIE
+
+      function displayTasks() {
+        liste.textContent = "";
+
+        // PARCOURIR LES CATEGORIES
+
+        for (let c = 0; c < categories.length; c++) {
+          const currentCategory = categories[c];
+
+          // CREER UNE SECTION
+
+          const section = document.createElement("div");
+
+          section.classList.add("category-section", currentCategory);
+
+          // CREER LE TITRE
+
+          const title = document.createElement("h2");
+
+          if (currentCategory === "etudes") {
+            title.textContent = "Études";
+          } else if (currentCategory === "travail") {
+            title.textContent = " Travail";
+          } else if (currentCategory === "personnel") {
+            title.textContent = " Personnel";
+          } else if (currentCategory === "projets") {
+            title.textContent = " Projets";
+          } else if (currentCategory === "sport") {
+            title.textContent = " Sport";
+          }
+
+          title.classList.add("category-title");
+
+          // AJOUTER LA FLECHE
+
+          const arrow = document.createElement("span");
+
+          arrow.textContent = "⌄";
+          arrow.classList.add("arrow");
+
+          title.appendChild(arrow);
+
+          // CREER LA GRILLE
+
+          const grid = document.createElement("div");
+
+          grid.classList.add("task-grid");
+
+          let found = false;
+
+          // PARCOURIR LES TACHES
+
+          for (let i = 0; i < tasks.length; i++) {
+            if (tasks[i].categorie === currentCategory) {
+              found = true;
+
+              const item = document.createElement("div");
+
+              item.classList.add("task-card", tasks[i].extra);
+
+              // TACHE URGENTE
+
+              if (tasks[i].name.toLowerCase().includes("urgent")) {
+                item.classList.add("urgent");
+              }
+
+              // TACHE TERMINEE
+
+              if (tasks[i].done === true) {
+                item.classList.add("terminee");
+              }
+
+              // NOM DE LA TACHE
+
+              const taskTitle = document.createElement("h3");
+
+              taskTitle.textContent = tasks[i].name;
+
+              item.appendChild(taskTitle);
+
+              // INFORMATIONS
+              const info = document.createElement("p");
+              info.classList.add("task-info");
+              let status = "Non terminée";
+              if (tasks[i].done === true) {
+                status = "Terminée";
+              }
+              info.textContent =
+                "Deadline : " +
+                (tasks[i].deadline || "Non définie") +
+                "\nStatut : " +
+                status +
+                "\nPriorité : " +
+                tasks[i].extra;
+              info.style.whiteSpace = "pre-line";
+              item.appendChild(info);
+              // BOUTON STATUT
+
+              const statusButton = document.createElement("button");
+
+              statusButton.textContent = "Changer le statut";
+
+              statusButton.addEventListener("click", function () {
+                toggleDone(i);
+              });
+
+              item.appendChild(statusButton);
+
+              // BOUTON MODIFIER
+
+              const modifyButton = document.createElement("button");
+
+              modifyButton.textContent = "Modifier";
+
+              modifyButton.addEventListener("click", function () {
+                modifyTask(i);
+              });
+
+              item.appendChild(modifyButton);
+
+              // BOUTON SUPPRIMER
+
+              const deleteButton = document.createElement("button");
+
+              deleteButton.textContent = "Supprimer";
+              deleteButton.classList.add("delete-button");
+
+              deleteButton.addEventListener("click", function () {
+                deleteTask(i);
+              });
+
+              item.appendChild(deleteButton);
+
+              grid.appendChild(item);
+            }
+          }
+
+          // CATEGORIE VIDE
+
+          if (found === false) {
+            const empty = document.createElement("p");
+
+            empty.textContent = "Aucune tâche dans cette catégorie.";
+
+            empty.classList.add("empty-message");
+
+            grid.appendChild(empty);
+          }
+
+          // RESTAURER L'ETAT D'OUVERTURE
+
+          if (openedCategories.includes(currentCategory)) {
+            grid.classList.add("show");
+            arrow.classList.add("rotate");
+          }
+
+          // CLIQUER SUR LE TITRE
+
+          title.addEventListener("click", function () {
+            grid.classList.toggle("show");
+
+            arrow.classList.toggle("rotate");
+
+            // METTRE A JOUR L'ETAT DE LA CATEGORIE
+
+            if (openedCategories.includes(currentCategory)) {
+              const position = openedCategories.indexOf(currentCategory);
+
+              openedCategories.splice(position, 1);
+            } else {
+              openedCategories.push(currentCategory);
+            }
+          });
+
+          section.appendChild(title);
+
+          section.appendChild(grid);
+
+          liste.appendChild(section);
+        }
+
+        // CALCULER LES STATISTIQUES
+
+        let total = tasks.length;
+
+        let terminees = 0;
+
+        for (let i = 0; i < tasks.length; i++) {
+          if (tasks[i].done === true) {
+            terminees++;
+          }
+        }
+
+        let restantes = total - terminees;
+
+        counter.textContent =
+          "Nombre total : " +
+          total +
+          " | Terminées : " +
+          terminees +
+          " | Restantes : " +
+          restantes;
+      }
+
+      // SUPPRIMER UNE TACHE
+
+      function deleteTask(index) {
+        tasks.splice(index, 1);
+
+        displayTasks();
+
+        message.textContent = "";
+      }
+
+      // MODIFIER UNE TACHE
+
+      function modifyTask(index) {
+        const newName = prompt("Nouveau nom :", tasks[index].name);
+
+        if (newName === null || newName.trim() === "") {
+          return;
+        }
+
+        // MODIFIER LA PRIORITE
+
+        const newPriority = prompt(
+          "Nouvelle priorité : basse, moyenne ou haute",
+          tasks[index].extra,
+        );
+
+        if (newPriority === null) {
+          return;
+        }
+
+        if (
+          newPriority !== "basse" &&
+          newPriority !== "moyenne" &&
+          newPriority !== "haute"
+        ) {
+          message.textContent = "Priorité invalide.";
+
+          return;
+        }
+
+        // MODIFIER LA DEADLINE
+
+        const newDeadline = prompt(
+          "Nouvelle deadline (AAAA-MM-JJ) :",
+          tasks[index].deadline,
+        );
+
+        if (newDeadline === null) {
+          return;
+        }
+
+        if (newDeadline !== "" && !/^\d{4}-\d{2}-\d{2}$/.test(newDeadline)) {
+          message.textContent = "Format de date invalide.";
+
+          return;
+        }
+
+        // MODIFIER LA CATEGORIE
+
+        const newCategorie = prompt(
+          "Nouvelle catégorie : etudes, travail, personnel, projets ou sport",
+          tasks[index].categorie,
+        );
+
+        if (newCategorie === null) {
+          return;
+        }
+
+        if (!categories.includes(newCategorie)) {
+          message.textContent = "Catégorie invalide.";
+
+          return;
+        }
+
+        // ENREGISTRER LES MODIFICATIONS
+
+        tasks[index].name = newName.trim();
+        tasks[index].extra = newPriority;
+        tasks[index].deadline = newDeadline;
+        tasks[index].categorie = newCategorie;
+
+        // OUVRIR LA NOUVELLE CATEGORIE
+
+        if (!openedCategories.includes(newCategorie)) {
+          openedCategories.push(newCategorie);
+        }
+
+        sortTasks();
+        displayTasks();
+
+        message.textContent = "";
+      }
+
+      // CHANGER LE STATUT
+
+      function toggleDone(index) {
+        tasks[index].done = !tasks[index].done;
+
+        displayTasks();
+      }
+
+      // VALEUR NUMERIQUE DES PRIORITES
+
+      function getPriorityNumber(priority) {
+        if (priority === "haute") {
+          return 3;
+        } else if (priority === "moyenne") {
+          return 2;
+        } else {
+          return 1;
+        }
+      }
+
+      // TRIER LES TACHES
+
+      function sortTasks() {
+        for (let i = 0; i < tasks.length; i++) {
+          for (let j = 0; j < tasks.length - 1; j++) {
+            let urgent1 = tasks[j].name.toLowerCase().includes("urgent");
+
+            let urgent2 = tasks[j + 1].name.toLowerCase().includes("urgent");
+
+            if (
+              (urgent1 === false && urgent2 === true) ||
+              (urgent1 === urgent2 &&
+                getPriorityNumber(tasks[j].extra) <
+                  getPriorityNumber(tasks[j + 1].extra))
+            ) {
+              const temporaryTask = tasks[j];
+
+              tasks[j] = tasks[j + 1];
+
+              tasks[j + 1] = temporaryTask;
+            }
+          }
+        }
+      }
+
+      // EVENEMENT DU BOUTON AJOUTER
+
+      bouton.addEventListener("click", function () {
+        addTask(champ.value, taskExtra.value);
+      });
+
+      // AFFICHAGE INITIAL
+
+      displayTasks();
+    </script>
+  </body>
+</html>
